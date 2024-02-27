@@ -17,22 +17,18 @@ from read_menu_point import read_menu_point
 
 
 ################################################################################
-def questions(list_ingredients, spell):
+def questions(list_ingredients, spell, beurk, miam):
     """
     Ask questions about favorite ingredients (miams)
     and non-wanted ingredients (beurks)
     """
-    beurks = list(map(str,
-                      input("\nList the ingredients you don't like, separated by space: ")
-                      .lower().split(' ')))
+    beurks = list(map(str, beurk.lower().split(' ')))
 
     for i, b in enumerate(beurks):
         if b not in spell and b not in list_ingredients:
             beurks[i] = spell.correction(b)
 
-    miams = list(map(str,
-                     input("List the ingredients you want, separated by space: ")
-                     .lower().split(' ')))
+    miams = list(map(str, miam.lower().split(' ')))
 
     if '' in miams:
         miams = []
@@ -148,7 +144,7 @@ def choice(inclus, exclus, pizz):
 
 
 ###################################################################################################
-def main_choice(image, lan):
+def main_choice(image, lan, beurk, miam):
     print('       _              ')
     print('      (_)             ')
     print(' _ __  _ __________ _ ')
@@ -170,7 +166,7 @@ def main_choice(image, lan):
         pizzas.update(pizza)
         list_ingredients.extend(item for item in list_ingredient if item not in list_ingredients)
     
-    beurks, miams = questions(list_ingredients, spell)
+    beurks, miams = questions(list_ingredients, spell, beurk, miam)
     
     name, ingr, pri = choice(miams, beurks, pizzas)
     

@@ -24,13 +24,18 @@
         <h1>Choose Language</h1>
         <form action="/process_image" method="POST">
             <input type="hidden" name="image_path" id="image_path" value="{{ image_path }}">
-            <div>
-                <label for="language_code">Language:</label>
-                <input type="text" name="language_code" id="language_code" required>
-                <span>For English write en, Spanish es, French fr and Italian it</span>
-            </div>
-            <button type="submit">Process Image</button>
-        </form>
+            <span>For English write en, Spanish es, French fr and Italian it:</span>
+            <input type="text" name="language_code" id="language_code" required>
+
+	    <h1>Ingredients</h1>
+	    <span>List the ingredients you don't like, separated by space</span>
+	    <input type="text" name="beurk" id="beurk">
+	    <br>
+            <span>List the ingredients you want, separated by space</span>
+            <input type="text" name="miam" id="miam">
+	    <br><br>
+	    <button type="submit">FIND ME A PIZZA</button>
+	</form>
     {% endif %}
 </body>
 </html>

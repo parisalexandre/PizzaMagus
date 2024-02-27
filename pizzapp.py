@@ -54,8 +54,11 @@ def index():
 def process_image():
     image_path = [request.form['image_path']]
     language_code = request.form['language_code']
+    beurk = request.form['beurk']
+    miam = request.form['miam']
     result = main_choice(image_path,
-                         language_code)
+                         language_code,
+                         beurk, miam)
 
     return render_template('result.html', result=result)
 
