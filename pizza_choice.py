@@ -46,10 +46,9 @@ def questions(list_ingredients, spell, beurk, miam):
 
     if len(not_in_list) > 0:
         if len(not_in_list) == 1:
-            print(not_in_list)
-            print(f"Sorry, your favorite ingredient '{not_in_list[0]}' is not available...")
+            raise ValueError(f"Sorry, your favorite ingredient '{not_in_list[0]}' is not available...")
         else:
-            print(f"Sorry, your favorite ingredients '{', '.join(not_in_list[:-1])} and '{not_in_list[-1]}' are not available")
+            raise ValueError(f"Sorry, your favorite ingredients '{', '.join(not_in_list[:-1])} and '{not_in_list[-1]}' are not available")
 
     for i, ingredient in enumerate(not_in_list):
         miams.remove(ingredient)
@@ -85,6 +84,13 @@ def random_select(pizz):
 
 
 ################################################################################
+def log_message(message, condition):
+    if condition:
+        return message
+    return None
+
+
+################################################################################
 def choice(inclus, exclus, pizz):
     """
     Main algorithm
@@ -96,6 +102,8 @@ def choice(inclus, exclus, pizz):
             if n in pizz.keys():
                 if exc in list(map(str.lower, pizz[n]['ingredients'])):
                     pizz.pop(n)
+    if len(pizz) == 0:
+        raise ValueError("Sorry, none of the pizzas correspond to your choices...\nThere are too many ingredients you don't like")
 
     # Now let's get a pizza that contains miams/inclus
     name, ingr, pri = random_select(pizz)
@@ -108,9 +116,7 @@ def choice(inclus, exclus, pizz):
         if len(pizz) > 0:
             name, ingr, pri = random_select(pizz)
         else:
-            print('\nSorry, none of the pizzas correspond to your choices...')
-            print('Please try again with other ingredients!')
-            sys.exit()
+            raise ValueError('Sorry, none of the pizzas correspond to your choices...\nPlease try again with other ingredients!')
 
     # Case with more than 1 favorite ingredient
     elif len(inclus) > 1:
@@ -129,33 +135,22 @@ def choice(inclus, exclus, pizz):
         name, ingr, pri = random_select(pizz)
         # Check if all favorite ingredients are in the selected pizza
         for wrong in range(max_count):
-            if all((item in ingr for item in inclus)):
-                print('\nYour pizza will contain all your favorite ingredients!')
+            message1 = log_message('Your pizza contains all your favorite ingredients!',
+                                   all(item in ingr for item in inclus))
+            if message1 is not None:
                 break
             # If not all, find the most
-            for wrong in range(max_count):
-                if max(interlist, key=len) in ingr:
-                    print('\nSorry, none of the pizzas contain all your favorite ingredients...')
-                    print('Your pizza will contain as many as your favorite ingredients as possible!\n')
-                    break
-                name, ingr, pri = random_select(pizz)
+            message2 = log_message('Sorry, none of the pizzas contain all your favorite ingredients...\nYour pizza contains as many as your favorite ingredients as possible!',
+                                   all(item in ingr for item in max(interlist, key=len)))
+            if message2 is not None:
+                break                
+            name, ingr, pri = random_select(pizz)
 
-    return name, ingr, pri
+    return name, ingr, pri, message1, message2
 
 
 ###################################################################################################
 def main_choice(image, lan, beurk, miam):
-    print('       _              ')
-    print('      (_)             ')
-    print(' _ __  _ __________ _ ')
-    print("| '_ \| |_  /_  / _` |")
-    print('| |_) | |/ / / / (_| |')
-    print('| .__/|_/___/___\__,_|')
-    print('| |       ')
-    print('|_|       ')
-    print('          ')
-    print('Welcome! Let me help you to find a pizza. First, a few questions.\n')
-    
     spell = language(lan)
     pizzas = {}
     list_ingredients = []
@@ -168,8 +163,10 @@ def main_choice(image, lan, beurk, miam):
     
     beurks, miams = questions(list_ingredients, spell, beurk, miam)
     
-    name, ingr, pri = choice(miams, beurks, pizzas)
-    
+    name, ingr, pri, message1, message2 = choice(miams, beurks, pizzas)
+   
+    result = [name, ingr, pri] 
+    return result, message1, message2
     print('---------------------------------------')
     print('Here is your pizza: >>> ', name, ' <<<')
     print(f'It costs {pri} and here is the list of ingredients:', ', '.join(ingr))

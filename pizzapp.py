@@ -42,6 +42,7 @@ def upload_image():
         flash('Invalid file type. Please upload a PNG, JPG, or JPEG image.')
         return redirect(request.url)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -53,15 +54,21 @@ def index():
 @app.route('/process_image', methods=['POST'])
 def process_image():
     image_path = [request.form['image_path']]
-    language_code = request.form['language_code']
-    beurk = request.form['beurk']
-    miam = request.form['miam']
-    result = main_choice(image_path,
-                         language_code,
-                         beurk, miam)
-
-    return render_template('result.html', result=result)
-
+    try:
+        language_code = request.form['language_code']
+        beurk = request.form['beurk']
+        miam = request.form['miam']
+        result, message1, message2 = main_choice(image_path,
+                                                 language_code,
+                                                 beurk, miam)
+        name = result[0]
+        ingr = result[1]
+        pri = result[2]
+        return render_template('result.html', name=name, ingr=ingr, pri=pri,
+                               message1=message1, message2=message2)
+    except ValueError as e:
+        error_message = str(e)
+        return render_template('error.html', error_message=error_message)
 
 if __name__ == '__main__':
     app.run(debug=True)

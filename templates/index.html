@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Image</title>
+    <title>Welcome to pizza-choice</title>
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
@@ -13,21 +13,23 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
-
-    <h1>Upload an Image</h1>
+    
+    <h1>WELCOME TO PIZZA CHOICE</h1>
+    <h1>Let me help you to find a pizza. First upload the menu :)</h1>
     <form action="{{ url_for('upload_image') }}" method="POST" enctype="multipart/form-data">
         <input type="file" name="image" accept="image/*">
         <button type="submit">Upload Image</button>
     </form>
 
     {% if image_path %}
-        <h1>Choose Language</h1>
+	<h1>Now a few questions:</h1>
+        <h2>Choose Language</h2>
         <form action="/process_image" method="POST">
             <input type="hidden" name="image_path" id="image_path" value="{{ image_path }}">
             <span>For English write en, Spanish es, French fr and Italian it:</span>
             <input type="text" name="language_code" id="language_code" required>
 
-	    <h1>Ingredients</h1>
+	    <h2>Ingredients</h2>
 	    <span>List the ingredients you don't like, separated by space</span>
 	    <input type="text" name="beurk" id="beurk">
 	    <br>
