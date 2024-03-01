@@ -5,6 +5,7 @@ import os
 import sys
 from flask import Flask, request, render_template, flash, redirect, url_for
 import numpy as np
+import ast
 
 #sys.path.append('./libs/')
 from pizza_choice import main_choice
@@ -26,21 +27,25 @@ def uploaded_file(filename):
 
 @app.route('/upload_image', methods=['GET', 'POST'])
 def upload_image():
-    if 'image' not in request.files:
+    if 'images' not in request.files:
         flash('No file part')
         return redirect(request.url)
-    image = request.files['image']
-    if image.filename == '':
-        flash('No selected file')
-        return redirect(request.url)
-    if image and allowed_file(image.filename):
-        filename = image.filename
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        image.save(image_path)
-        return render_template('index.html', image_path=os.path.join('uploads', filename))
-    else:
-        flash('Invalid file type. Please upload a PNG, JPG, or JPEG image.')
-        return redirect(request.url)
+    images = request.files.getlist('images')
+    image_paths = []
+    for image in images:
+        if image.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if image and allowed_file(image.filename):
+            filename = image.filename
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            image.save(image_path)
+            image_paths.append(os.path.join('./uploads/', filename))
+        else:
+            flash('Invalid file type. Please upload a PNG, JPG, or JPEG image.')
+            return redirect(request.url)
+    
+    return render_template('index.html', image_paths=image_paths)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -48,22 +53,24 @@ def index():
     if request.method == 'POST':
         return redirect(url_for('upload_image'))
 
-    return render_template('index.html', image_path='')
+    return render_template('index.html', image_paths='')
 
 
 @app.route('/process_image', methods=['POST'])
 def process_image():
-    image_path = [request.form['image_path']]
+    #image_paths = [request.form.getlist('image_path')]
+    image_paths = ast.literal_eval(request.form['image_paths'])
     try:
         language_code = request.form['language_code']
         beurk = request.form['beurk']
         miam = request.form['miam']
-        result, message1, message2 = main_choice(image_path,
+        result, message1, message2 = main_choice(image_paths,
                                                  language_code,
                                                  beurk, miam)
         name = result[0]
         ingr = result[1]
         pri = result[2]
+
         return render_template('result.html', name=name, ingr=ingr, pri=pri,
                                message1=message1, message2=message2)
     except ValueError as e:

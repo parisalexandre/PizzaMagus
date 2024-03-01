@@ -95,6 +95,8 @@ def choice(inclus, exclus, pizz):
     """
     Main algorithm
     """
+    message1 = None
+    message2 = None
     # Start with the exclusion of pizzas that contain beurks/exclus
     pcop = pizz.copy()
     for i, n in enumerate(pcop):
